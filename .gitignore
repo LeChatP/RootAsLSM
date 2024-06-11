@@ -52,7 +52,13 @@ Mkfile.old
 dkms.conf
 
 #Ignore everything except the capdel.c file
-/*
+/kernelbuild/*
 
 !**/capdel.c
+
+
+
+
+
+
 
