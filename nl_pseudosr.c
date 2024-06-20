@@ -20,14 +20,14 @@ int main(int argc, char *argv[]) {
     }
     int kernel_pid = atoi(argv[1]);
 
-    // Ouvrir un fichier pour la sortie
-    int log_fd = open("/home/osboxes/RootAsLSM/pseudo_sr.log", O_WRONLY | O_CREAT | O_APPEND, 0644);
+    // Open a file for output
+    int log_fd = open("/home/osboxes/RootAsLSM/nl_pseudosr.log", O_WRONLY | O_CREAT | O_APPEND, 0644);
     if (log_fd < 0) {
         perror("open");
         return -1;
     }
 
-    // Rediriger stdout et stderr vers le fichier
+    // Redirect stdout and stderr to the file
     dup2(log_fd, STDOUT_FILENO);
     dup2(log_fd, STDERR_FILENO);
     close(log_fd);
@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
 
     memset(&dest_addr, 0, sizeof(dest_addr));
     dest_addr.nl_family = AF_NETLINK;
-    dest_addr.nl_pid = 0;//kernel_pid; // Kernel
+    dest_addr.nl_pid = 0;   // Kernel
     dest_addr.nl_groups = 0;    /* unicast */
 
     // Allocate memory for the Netlink message
@@ -79,25 +79,6 @@ int main(int argc, char *argv[]) {
     nlh->nlmsg_flags = 0;
 
     strcpy(NLMSG_DATA(nlh), "Hello this is a msg from userspace");
-
-    // Copy the environment variables to the Netlink message payload
-/*    char *env = "TEST"; //getenv("PATH");
-    if (!env) {
-        perror("getenv");
-        free(nlh);
-        close(sock_fd);
-        return -4;
-    }
-    strcpy(NLMSG_DATA(nlh), env);*/
-
-    /*
-    char **env = environ;
-    char *payload = (char *)NLMSG_DATA(nlh);
-    while (*env) {
-        strncpy(payload, *env, MAX_PAYLOAD);
-        payload += strlen(*env) + 1;
-        env++;
-    }*/
 
     // Set up the I/O vector and message header for sending the Netlink message
     iov.iov_base = (void *)nlh;
